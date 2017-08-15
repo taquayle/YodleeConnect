@@ -1,0 +1,16 @@
+{
+    "name": "taquayle/exchange-scrapper",
+    "description": "PosgreSQL DB Connect",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tyler Quayle",
+            "email": "taquayle@uw.edu"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ExScrape\\": "src/"
+        }
+    }
+}
