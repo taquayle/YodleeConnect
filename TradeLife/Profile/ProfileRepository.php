@@ -37,6 +37,11 @@ class ProfileRepository extends APIController
   */
   public function generateProfile($input)
   {
+    // $message = $this->userStocks->versionTwo($input['userName']);
+    // return response()->json(['error' => true,
+    //     'messages' => $message,
+    //     'error_code' => 0], 200);
+
     $message = "Successfully Generated Profile";
     $error = false;
     $errorCode = 0;

@@ -163,8 +163,8 @@
             return false; // Contained previous/bad keyword
           }
         }
-        return true;
       }
+      return true;
     }
 
 

@@ -120,4 +120,5 @@ THINGS TO REMEMBER
       * Need ability to set index on transaction. IE come with User or
         transaction keywords
     * Continue working on stocks layout
-    * 
+### 8.16.2017
+    * COMBINE DESC-CATE

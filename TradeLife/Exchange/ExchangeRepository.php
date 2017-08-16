@@ -26,7 +26,16 @@ class ExchangeRepository extends APIController
         $keywords[$key][] = $row['symbol'];
         if(! array_key_exists(strtoupper($row['symbol']), $companies))
           $companies[$row['symbol']] = ['Value' => 0, 'Keys' => array()];
-        $companies[$row['symbol']]['Keys'][] = $key;
+        $companies[$row['symbol']]['Keys'][] = trim($key);
+      }
+      
+      $current = preg_split($delim, trim($row['sector']));
+      foreach ($current as $key) // Check each split word
+      {
+        $keywords[$key][] = $row['symbol'];
+        if(! array_key_exists(strtoupper($row['symbol']), $companies))
+          $companies[$row['symbol']] = ['Value' => 0, 'Keys' => array()];
+        $companies[$row['symbol']]['Keys'][] = trim($key);
       }
     }
     $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_COMPANY.json";

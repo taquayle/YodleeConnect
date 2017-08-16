@@ -36,23 +36,68 @@
       if($profile->User_Keywords == null && $profile->Desc_Keywords == null)
         return false;
       $targetSectors = null;
-      if($profile->Desc_Keywords != null)
-        $targetSectors = $this->weightedChoice($secArr, get_object_vars($profile->Desc_Keywords), $weight_used);
-      if($profile->User_Keywords != null)
-        $targetSectors = $this->weightedChoice($secArr, get_object_vars($profile->User_Keywords), $weight_used);
+
+      /*CONTINUE FROM HERE*/
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_COMPANY.json";
+      $byCompany = json_decode(file_get_contents($fileName));
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_KEYWORD.json";
+      $byKeyword = json_decode(file_get_contents($fileName));
+
+      if($profile->Desc_Keywords != null){
+        $targetSectors = $this->weightedChoice($secArr, get_object_vars($profile->Desc_Keywords), $weight_used);}
+      if($profile->User_Keywords != null){
+        $targetSectors = $this->weightedChoice($secArr, get_object_vars($profile->User_Keywords), $weight_used);}
 
       $profile->Target_Sectors = ["By" => $weight_used, "Sectors" => $targetSectors] ;
 
       $profile->Target_Companies = NULL; //Clear before use
-      //$profile->Target_Companies['Default'] = $this->companyByWeight($profile->Target_Sectors['Sectors']);
       $profile->Target_Companies['Disruptive'] = $this->disruptiveCompanyByWeight($profile->Target_Sectors['Sectors']);
       $profile->Target_Companies['Cap'] = $this->companyByWeight($profile->Target_Sectors['Sectors']);
 
+      $fileName = env('USER_PROFILE_REPO') . $user . ".json";
       file_put_contents($fileName, json_encode($profile, JSON_FORCE_OBJECT));
 
       return true;
 
     }
+
+    /**
+    *  THIS IS FOR THE NEW VERSION OF THE MATCHING ALGO. NOT USED AT THIS TIME
+    *
+    *
+    */
+    public function versionTwo($user){
+
+      $fileName = env('USER_PROFILE_REPO') . $user . ".json";
+      $profile = json_decode(file_get_contents($fileName));
+      $userKeywords = get_object_vars($profile->Desc_Keywords);
+
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_COMPANY.json";
+      $companies = json_decode(file_get_contents($fileName),true);
+
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_KEYWORD.json";
+      $keywords = json_decode(file_get_contents($fileName),true);
+
+      $temp = array();
+
+      foreach ($userKeywords as $k => $key){
+        if(array_key_exists($k, $keywords)){
+          foreach ($keywords[$k] as $relatedCompanies){
+            if(array_key_exists($relatedCompanies, $companies)){
+                $companies[$relatedCompanies]['Value'] += $key->Value;
+            }
+          }
+        }
+      }
+
+      foreach ($companies as $c => $company) {
+        if($company['Value'] > 0)
+          $temp[] = $company;
+      }
+
+      return $temp;
+    }
+
     /**
     * Given the generated userKeyWordArray, check it against the exchange keys.
     * If there is a match, give the sector containing the keyword more weight.
@@ -81,12 +126,6 @@
             // If the user keyword is in the sector keyword, increase the
             //  [Weight] of the [Sector] associated with the [Associated]
             //  array
-            // Since php arrays have a key-value pairing. check if word exists
-            // if (!array_key_exists(strtoupper($sectorKeyword),$profile['User_Keywords'])) {
-            //   $profile['User_Keywords'][strtoupper($word)] =
-            //           [ 'Name' => strtoupper($word), 'Value'=> $maxValue,
-            //             'Hits' => $maxHits, 'Percent' => 0.0];
-            // }
             if(stristr($sectorKeyword, $userKeyword->Name)){
               $sector->Weight += $userKeyword->$weight;
             }
