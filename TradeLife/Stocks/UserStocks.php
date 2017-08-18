@@ -54,6 +54,7 @@
       $profile->Target_Companies['Disruptive'] = $this->disruptiveCompanyByWeight($profile->Target_Sectors['Sectors']);
       $profile->Target_Companies['Cap'] = $this->companyByWeight($profile->Target_Sectors['Sectors']);
 
+      $profile->Tailored_Companies = $this->tailoredCompanies($this->user, $profile);
       $fileName = env('USER_PROFILE_REPO') . $user . ".json";
       file_put_contents($fileName, json_encode($profile, JSON_FORCE_OBJECT));
 
@@ -66,37 +67,68 @@
     *
     *
     */
-    public function versionTwo($user){
-
-      $fileName = env('USER_PROFILE_REPO') . $user . ".json";
-      $profile = json_decode(file_get_contents($fileName));
-      $userKeywords = get_object_vars($profile->Desc_Keywords);
-
+    public function tailoredCompanies($user, $profile){
       $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_COMPANY.json";
-      $companies = json_decode(file_get_contents($fileName),true);
+      $byCompanies = json_decode(file_get_contents($fileName), true);
 
       $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_KEYWORD.json";
-      $keywords = json_decode(file_get_contents($fileName),true);
+      $byKeywords = json_decode(file_get_contents($fileName), true);
 
-      $temp = array();
+      if($profile->User_Keywords != NULL){
+        $userKeywords = get_object_vars($profile->User_Keywords);
+        $this->tailoredLoop($byKeywords, $byCompanies, $userKeywords);
+      }
+      if($profile->Desc_Keywords != NULL){
+        $userKeywords = get_object_vars($profile->Desc_Keywords);
+        $this->tailoredLoop($byKeywords, $byCompanies, $userKeywords);
+      }
+      if($profile->Cate_Keywords != NULL){
+        $userKeywords = get_object_vars($profile->Cate_Keywords);
+        $this->tailoredLoop($byKeywords, $byCompanies, $userKeywords);
+      }
 
-      foreach ($userKeywords as $k => $key){
-        if(array_key_exists($k, $keywords)){
-          foreach ($keywords[$k] as $relatedCompanies){
-            if(array_key_exists($relatedCompanies, $companies)){
-                $companies[$relatedCompanies]['Value'] += $key->Value;
+      $topCompanies = array();
+      foreach ($byCompanies as $c => $company) {
+        if($company['Value'] > 0){
+          $topCompanies[] = $company;}
+      }
+      usort($topCompanies, array($this, 'cmpWeightVersion2'));
+
+      $returnValues = array();
+      for($i = 0; $i < env('NUMBER_OF_TAILORED_STOCKS'); $i++){
+        $temp = Company::select('*')->where('symbol', '=', $topCompanies[$i]['Symbol'])->get()->first()->toArray();
+        $temp['keys'] = $topCompanies[$i]['Keys'];
+        $returnValues[] = $temp;
+      }
+      return $returnValues;
+    }
+
+    private function tailoredLoop($byKeyword, &$byCompany, $keywordsToCheck){
+      foreach ($keywordsToCheck as $k => $key){
+        if(array_key_exists($k, $byKeyword)){
+          foreach ($byKeyword[$k] as $relatedCompanies){
+            if(array_key_exists($relatedCompanies, $byCompany)){
+                $byCompany[$relatedCompanies]['Value'] += $key->Value;
+                $byCompany[$relatedCompanies]['Keys'][$k] += $key->Value;
             }
           }
         }
       }
-
-      foreach ($companies as $c => $company) {
-        if($company['Value'] > 0)
-          $temp[] = $company;
-      }
-
-      return $temp;
     }
+
+    /**
+    * Used in conjunction with usort to sort weighted-sectors in descending
+    * order by weight.
+    *   @return int
+    */
+    private function cmpWeightVersion2($a, $b)
+    {
+        if ($a['Value'] == $b['Value']) {
+            return ($a['Cap'] > $b['Cap']) ? -1 : 1;
+        }
+        return ($a['Value'] > $b['Value']) ? -1 : 1;
+    }
+
 
     /**
     * Given the generated userKeyWordArray, check it against the exchange keys.
@@ -138,30 +170,6 @@
 
       return [$result[0]->Sector, $result[1]->Sector, $result[2]->Sector];
     }
-
-    /**
-    *
-    *
-    */
-    private function directCompanyHits($arr)
-    {
-      $companies = array();
-      foreach ($arr as $k =>$candidate) {
-        $test = str_replace("'", "", $candidate['Name']);
-        $sql = "SELECT * FROM companies WHERE name LIKE '%$test%'";
-        if ( ! $results = $this->conn->query($sql) )
-          die(var_export($this->conn->errorinfo(), TRUE));
-        else {
-          if($results->rowCount() == 1){
-              foreach ($results as $value) {
-                $companies[] = $value['symbol'];
-              }
-            }
-        }
-      }
-      return $companies;
-    }
-
 
     private function companyByWeight($sectors)
     {
@@ -205,7 +213,6 @@
         }
         return ($a->Weight > $b->Weight) ? -1 : 1;
     }
-
   }
 
 ?>

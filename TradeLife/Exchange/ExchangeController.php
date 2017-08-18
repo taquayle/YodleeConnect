@@ -21,7 +21,7 @@ class ExchangeController extends APIController
   public function generate()
   {
     $input = Input::json()->all();
-    return $this->exchangeRepository->temp();
+    return $this->exchangeRepository->createKeywords();
   }
 
 }

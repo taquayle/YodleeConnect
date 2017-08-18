@@ -37,8 +37,9 @@ class LoginRepository extends APIController
     }
     $user = User::where('name', '=', strtolower($input['userName']))->first();
     $user->touch();
-    //$yodleeResponse = $this->intiateYodleeLogin($input);
-    $yodleeResponse = true;
+
+    
+    $yodleeResponse = $this->intiateYodleeLogin($input);
     if(!$yodleeResponse)
       return response()->json(array('error' => true,
                   'messages' => "Yodlee Cobrand Failure"), 200);

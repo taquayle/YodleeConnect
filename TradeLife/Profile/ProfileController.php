@@ -20,6 +20,8 @@ class ProfileController extends APIController
   public function put()
   {
     $input = Input::json()->all();
+
+    //return $this->profileRepository->testVersionTwo($input);
     return $this->profileRepository->generateProfile($input);
   }
 

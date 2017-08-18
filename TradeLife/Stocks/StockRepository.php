@@ -48,6 +48,9 @@ class StockRepository extends APIController
         }
       }
     }
+    foreach ($profile['Tailored_Companies'] as &$company) {
+      $company['stock_data'] = $this->getData($company['symbol']);
+    }
 
     //
     $profile['Invest_Date'] = date('F jS, Y', strtotime('-'.env('DEFAULT_AMOUNT_OF_DAYS').' days'));

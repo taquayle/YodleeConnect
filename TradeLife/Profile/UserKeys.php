@@ -31,6 +31,12 @@
         return false;
       }
       else{
+        $ignore_keywords = $this->buildIgnoreKeywords();
+        $keywords = array();
+        $keywords = $this->parse($keywords, $ignore_keywords, 'category');
+        $keywords = $this->parse($keywords, $ignore_keywords, 'simple_desc');
+        $keywords = $this->parse($keywords, $ignore_keywords, 'original_desc');
+        $profile['Keywords'] = $keywords;
         $profile['Cate_Keywords'] = $this->buildCategory();
         $profile['Desc_Keywords'] = $this->buildDescription();
 
@@ -43,10 +49,17 @@
     }
 
     public function emptyProfile($user){
-      return (["UserName" => $user, "Data_Period" => env('DEFAULT_AMOUNT_OF_DAYS'), "Invest_Date" => NULL,"Cate_Keywords" => NULL ,
-                  "User_Keywords" => NULL,
-                  "Desc_Keywords" => NULL, "Target_Sectors" => NULL,
-                  "Target_Companies" => NULL]);
+      return (["UserName" => $user,
+              "Data_Period" => env('DEFAULT_AMOUNT_OF_DAYS'),
+              "Invest_Date" => NULL,
+              "Keywords" => NULL,
+              "Cate_Keywords" => NULL ,
+              "User_Keywords" => NULL,
+              "Desc_Keywords" => NULL,
+              "Target_Sectors" => NULL,
+              "Target_Companies" => NULL,
+              "Tailored_Companies" => NULL,
+            ]);
     }
     /**
     * Used in conjunction with usort to sort list in descending order by money
@@ -114,7 +127,7 @@
     * @param String, Optional
     * @return Multidimensional Array
     */
-    private function parse(&$kw, $bad_kw, $column, $delimiter = "/[\/,\n]+/")
+    private function parse(&$kw, $bad_kw, $column, $delimiter = "/[\/,\s,\n]+/")
     {
 
        // Requery/reset to top of list
@@ -153,6 +166,8 @@
     */
     private function checkKeyword($inputArray, $candidateKeyword)
     {
+      if(!preg_match("/^[A-Za-z]+$/", $candidateKeyword))
+        return false;
       if(array_key_exists(strtoupper($candidateKeyword), $inputArray)){
         return false; // Contained previous/bad keyword
       }

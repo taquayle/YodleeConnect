@@ -27,6 +27,13 @@ class ProfileRepository extends APIController
     $this->userStocks = $userStocks;
   }
 
+  public function testVersionTwo($input){
+    $message = $this->userStocks->versionTwo($input['userName']);
+    return response()->json(['error' => true,
+        'messages' => $message,
+        'error_code' => 0], 200);
+  }
+
   /**
   * Generate the user profile, this will destroy old profile and create a new
   * one if it exsists, but will save the entered user_keywords. Else it will
@@ -37,10 +44,7 @@ class ProfileRepository extends APIController
   */
   public function generateProfile($input)
   {
-    // $message = $this->userStocks->versionTwo($input['userName']);
-    // return response()->json(['error' => true,
-    //     'messages' => $message,
-    //     'error_code' => 0], 200);
+
 
     $message = "Successfully Generated Profile";
     $error = false;

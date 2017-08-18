@@ -37,8 +37,7 @@ class TransactionRepository extends APIController
         $transCount++;
     }
     return response()->json(['error' => false,
-        'messages' => "Inserted: $transCount",
-        'error_code' => 'yodlee_sandbox_mode'], 200);
+        'messages' => "Inserted: $transCount"], 200);
   }
 
   protected function insertTransaction($user, $action)
