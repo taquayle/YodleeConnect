@@ -1,10 +1,10 @@
 <?php
-namespace Trader\Profile;
+namespace TradeLife\Profile;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
-use Trader\Profile\ProfileRepository;
-use Trader\Stocks\StockController;
+use TradeLife\Profile\ProfileRepository;
+use TradeLife\Stocks\StockController;
 
 
 class ProfileController extends APIController

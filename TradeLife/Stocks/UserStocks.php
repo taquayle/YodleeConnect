@@ -1,6 +1,6 @@
 <?php
 
-  namespace Trader\Stocks;
+  namespace TradeLife\Stocks;
   use PDO;
   use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
   use App\Http\Controllers\APIController;

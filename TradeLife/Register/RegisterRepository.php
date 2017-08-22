@@ -4,7 +4,7 @@
 // FILE: TradeLife/Register/RegisterRepository
 // DESC: Attempt to insert user into user DB
 
-namespace Trader\Register;
+namespace TradeLife\Register;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use YodleeApi;
 use App\User;
 use PDOException;
+use \Cache;
 
 class RegisterRepository extends APIController
 {
@@ -31,44 +32,54 @@ class RegisterRepository extends APIController
   {
     // User the App/User model
     $user = new User;
-    // save them lower, to avoid a world of issues
-    $user->name = strtolower($input['userName']);
-    $user->email = strtolower($input['userEMail']);
-    $user->password = $input['userPass'];
-    try{
-      $saveSuccess = $user->save();
-    }
-    catch(PDOException $e) // Something went wrong, most likely unique()
-    {
-      $errorCode = $e->errorInfo[0];
-      $fullError = $e->errorInfo[2];
-      $message = "Failure to Register";
-      if($errorCode == 23505){
-        // Error 23505 means a unique constraint was violated, check which of
-        // 2 culprits tripped it. Email or UserName
-        // IF BOTH TAKEN, USER IS PROBABLY ALREADY REGISTERED
-        if(User::where('name', '=',  strtolower($input['userName']))->exists() &&
-          User::where('email', '=',  strtolower($input['userEMail']))->exists()){
-          $message = 'You are already registered.';}
-        // CHECK IF IT WAS THE USERNAME THAT WAS TAKEN
-        else if(User::where('name', '=',  strtolower($input['userName']))->exists()){
-          $message = 'Username already taken';}
-        // E-Mail was already taken.
-        else {
-          $message = 'E-mail already taken';
-        }
+    $message = 'Successfully Registered';
+    $error_status = false;
+    $error_code = '';
+    if(User::select('*')->where('name', '=', strtolower($input['userName']))->exists()){
+      return response()->json(['error' => true,
+            'message' => "Username Already Taken",
+            'error_code' => 'unique_constraint_violation'], 200);}
+
+    else if(User::select('*')->where('email', '=', strtolower($input['userEMail']))->exists()){
+      return response()->json(['error' => true,
+            'message' => "Email Already Taken",
+            'error_code' => 'unique_constraint_violation'], 200);}
+
+    else{
+      /************************************************************************/
+      // ONCE OUT OF SANDBOX MODE USE THIS
+      /************************************************************************/
+      // if(!$this->intiateYodleeInsert($input)){
+      //   return response()->json(['error' => true,
+      //         'message' => "Failed to Register with Yodlee",
+      //         'error_code' => 'yodlee_sandbox_mode'], 200);
+      // }
+      /************************************************************************/
+
+      /************************************************************************/
+      // AND DELETE THIS
+      $still_in_sandbox_mode = true;
+      if(!$still_in_sandbox_mode){
+        $foo = 'bar';
       }
-      return response()->json(['error' => true,
-          'message' => $message,
-          'error_code' => 'unique_db_constraint'], 401);
+      /************************************************************************/
+      else{
+        $user->name = strtolower($input['userName']);
+        $user->email = strtolower($input['userEMail']);
+        $user->password = $input['userPass'];
+        try{
+          $saveSuccess = $user->save();
+        }
+        catch(PDOException $e) // Something went wrong, most likely unique()
+        {
+          return response()->json(['error' => true,
+                'message' => "Failed to Register",
+                'error_code' => 'unique_constraint_violation'], 200);
+        }
+        return response()->json(['error' => false,
+            'message' => "Successfully Registered",], 200);
+      }
     }
-    // This is a generic response, if it wasn't PDO exception
-    if(!$saveSuccess)
-      return response()->json(['error' => true,
-          'message' => "Failed to create User",
-          'error_code' => 'yodlee_sandbox_mode'], 401);
-    return response()->json(['error' => false,
-        'message' => "Successfully Registered",], 200);
   }
 
   /**
@@ -79,9 +90,21 @@ class RegisterRepository extends APIController
   */
   private function intiateYodleeInsert($input)
   {
-    return response()->json(['errors' => true,
-        'messages' => "Cannot insert to yodlee during sandbox mode",
-        'error_code' => 'yodlee_sandbox_mode'], 401);
+    $yodleeApi = new \YodleeApi\Client(env('YODLEEAPI_URL'));
+    $response = true;
+    if(Cache::has('cobrand'))
+      $yodleeApi->setCobrand(Cache::get('cobrand'));
+    else{
+      $response = $yodleeApi->cobrand()->login(env('YODLEEAPI_COBRAND_LOGIN'), env('YODLEEAPI_COBRAND_PASSWORD'));
+      Cache::put('cobrand', $yodleeApi->session()->getCobrandSessionToken(), 30);
+    }
+
+    $response = $yodleeApi->user()->register($input['userName'],
+                                            $input['userPass'],
+                                            $input['userEMail']);
+    if(!$response)
+      return false;
+    return true;
   }
 }
 

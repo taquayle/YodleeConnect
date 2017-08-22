@@ -1,9 +1,9 @@
 <?php
-namespace Trader\Register;
+namespace TradeLife\Register;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
-use Trader\Register\RegisterRepository;
+use TradeLife\Register\RegisterRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 

@@ -5,14 +5,14 @@
 // DESC: Functions that to create, get, and update user profile. Profile can be
 //    found at env('USER_PROFILE_REPO')
 
-namespace Trader\Profile;
+namespace TradeLife\Profile;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Trader\Profile\UserKeys;
-use Trader\Stocks\UserStocks;
+use TradeLife\Profile\UserKeys;
+use TradeLife\Stocks\UserStocks;
 use YodleeApi;
 use App\User;
 use PDOException;

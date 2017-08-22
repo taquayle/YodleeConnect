@@ -1,5 +1,5 @@
 <?php
-namespace Trader\Exchange;
+namespace TradeLife\Exchange;
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()

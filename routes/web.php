@@ -10,15 +10,16 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('login','\Trader\Login\LoginController@login');
-Route::post('logout','\Trader\Login\LoginController@logout');
-Route::post('register', '\Trader\Register\RegisterController@register');
-Route::post('transaction', '\Trader\Transactions\TransactionController@transaction');
-Route::post('profile/get', '\Trader\Profile\ProfileController@get');
-Route::post('profile/put', '\Trader\Profile\ProfileController@put');
-Route::post('profile/post', '\Trader\Profile\ProfileController@post');
-Route::post('stocks/get', '\Trader\Stocks\StockController@get');
-Route::post('exchange/generate', '\Trader\Exchange\ExchangeController@generate');
+Route::post('login','\TradeLife\Login\LoginController@login');
+Route::post('logout','\TradeLife\Login\LoginController@logout');
+Route::post('register', '\TradeLife\Register\RegisterController@register');
+Route::post('transaction/put', '\TradeLife\Transactions\TransactionController@put');
+Route::post('transaction/get', '\TradeLife\Transactions\TransactionController@get');
+Route::post('profile/get', '\TradeLife\Profile\ProfileController@get');
+Route::post('profile/put', '\TradeLife\Profile\ProfileController@put');
+Route::post('profile/post', '\TradeLife\Profile\ProfileController@post');
+Route::post('stocks/get', '\TradeLife\Stocks\StockController@get');
+Route::post('exchange/generate', '\TradeLife\Exchange\ExchangeController@generate');
 
 
 

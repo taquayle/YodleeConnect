@@ -1,9 +1,9 @@
 <?php
-namespace Trader\Stocks;
+namespace TradeLife\Stocks;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
-use Trader\Stocks\StockRepository;
+use TradeLife\Stocks\StockRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 

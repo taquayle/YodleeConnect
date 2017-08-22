@@ -1,5 +1,5 @@
 <?php
-namespace Trader\Transactions;
+namespace TradeLife\Transactions;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
@@ -36,8 +36,11 @@ class TransactionRepository extends APIController
       if($this->insertTransaction($input['userName'], $transaction))
         $transCount++;
     }
+
+    $count = Transaction::where('name', '=', $input['userName'])->count();
     return response()->json(['error' => false,
-        'messages' => "Inserted: $transCount"], 200);
+        'messages' => "Inserted: $transCount",
+        'count' => $count], 200);
   }
 
   protected function insertTransaction($user, $action)
@@ -76,6 +79,20 @@ class TransactionRepository extends APIController
       return false;
     }
     return true;
+  }
+
+  public function transactionHistory($input){
+    $count = Transaction::where('name', '=', $input['userName'])->count();
+    if ($count <= 0)
+    {
+      return response()->json(['error' => true,
+          'messages' => 'No Transactions Available'], 200);
+    }
+
+    $history = Transaction::where('name', '=', $input['userName'])->get()->toJson();
+    return response()->json(['error' => false,
+        'messages' => 'successful retrieval of history',
+        'history' => json_encode($history, JSON_FORCE_OBJECT)], 200);
   }
 }
 

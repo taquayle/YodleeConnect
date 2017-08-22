@@ -1,6 +1,6 @@
 <?php
-namespace Trader\Exchange;
-use Trader\Exchange\ExchangeRepository;
+namespace TradeLife\Exchange;
+use TradeLife\Exchange\ExchangeRepository;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;

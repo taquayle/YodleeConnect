@@ -7,7 +7,7 @@
 //    if the stock data can't be found, set stock_data to null so TradeLifeApp
 //    will know to display 'n/a'
 
-namespace Trader\Stocks;
+namespace TradeLife\Stocks;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;

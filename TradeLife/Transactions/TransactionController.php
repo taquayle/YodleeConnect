@@ -1,9 +1,9 @@
 <?php
-namespace Trader\Transactions;
+namespace TradeLife\Transactions;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
-use Trader\Transactions\TransactionRepository;
+use TradeLife\Transactions\TransactionRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,11 +15,17 @@ class TransactionController extends APIController
       $this->transactionRepository = $transactionRepository;
   }
 
-  public function transaction()
+  public function put()
   {
     $input = Input::json()->all();
     return $this->transactionRepository->intiateTransaction($input);
 
+  }
+
+  public function get()
+  {
+    $input = Input::json()->all();
+    return $this->transactionRepository->transactionHistory($input);
   }
 }
 

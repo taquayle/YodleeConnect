@@ -89,21 +89,8 @@
 
 
                 <div class="title m-b-md">
-                    DISPLAY DATABASE
+                    TradeLife Running
                 </div>
-                <div class="links">
-                    <a href="tests/db_companies_show.php">Companies</a>
-                    <a href="tests/db_user_show.php">User</a>
-                    <a href="{{ url('/showdatabases') }}">ALL</a>
-                </div>
-
-                <div class="title m-b-md">
-                    Info
-                </div>
-                <div class="links">
-                    <a href="tests/phpinfo.php">PHP Info</a>
-                </div>
-
             </div>
         </div>
     </body>

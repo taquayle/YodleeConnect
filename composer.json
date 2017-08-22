@@ -24,8 +24,7 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Trader\\":"TradeLife/",
-            "TradeLife\\":"app/trade-life/src/",
+            "TradeLife\\":"TradeLife/",
             "ExScrape\\": "app/exchange-scrapper/src/"
         }
     },

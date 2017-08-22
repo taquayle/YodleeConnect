@@ -4,11 +4,11 @@
 // FILE: TradeLife/Login
 // DESC: Controller for login attempts
 
-namespace Trader\Login;
+namespace TradeLife\Login;
 use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
 use App\Http\Controllers\APIController;
 use Illuminate\Support\Facades\Input;
-use Trader\Login\LoginRepository;
+use TradeLife\Login\LoginRepository;
 
 
 class LoginController extends APIController

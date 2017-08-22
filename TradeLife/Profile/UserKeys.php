@@ -1,6 +1,6 @@
 <?php
 
-  namespace Trader\Profile;
+  namespace TradeLife\Profile;
   use PDO;
   use App\Transaction;
   use Illuminate\Support\Facades\Response;  //Laravel Response class. Use response()->json()
@@ -24,9 +24,11 @@
       $profile = $this->emptyProfile($this->user);
       $profile['UserName'] = $user;
       $profile['User_Keywords'] = $saveUserKeys;
-      //No transactions for user yet. don't do anything
-      $temp = Transaction::where('name', '=', $this->user)->count();
-      if ($temp <= 0)
+      
+      //No transactions for user yet. don't continue
+      //  This profile is either a 'base' or only uses User_Keywords
+      $profile['Transactions'] = Transaction::where('name', '=', $this->user)->count();
+      if ($profile['Transactions'] <= 0)
       {
         return false;
       }
@@ -52,6 +54,7 @@
       return (["UserName" => $user,
               "Data_Period" => env('DEFAULT_AMOUNT_OF_DAYS'),
               "Invest_Date" => NULL,
+              "Transactions" => NULL,
               "Keywords" => NULL,
               "Cate_Keywords" => NULL ,
               "User_Keywords" => NULL,
