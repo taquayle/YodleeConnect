@@ -17,7 +17,7 @@ class ProfileController extends APIController
       $this->stockController = $stockController;
   }
 
-  public function put()
+  public function update()
   {
     $input = Input::json()->all();
 
@@ -25,13 +25,13 @@ class ProfileController extends APIController
     return $this->profileRepository->generateProfile($input);
   }
 
-  public function get()
+  public function retrieve()
   {
     $input = Input::json()->all();
     return $this->profileRepository->retrieveProfile($input);
   }
 
-  public function post()
+  public function add()
   {
     $input = Input::json()->all();
     return $this->profileRepository->updateUserKeywords($input);

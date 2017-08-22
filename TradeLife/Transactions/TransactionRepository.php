@@ -22,9 +22,7 @@ class TransactionRepository extends APIController
   {
 
     $yodleeApi =  new \YodleeApi\Client(env('YODLEEAPI_URL'));
-    if(Cache::has('cobrand'))
-      $yodleeApi->setCobrand(Cache::get('cobrand'));
-    else{
+    if(!Cache::has('cobrand')){
       $yodleeApi->cobrand()->login(env('YODLEEAPI_COBRAND_LOGIN'), env('YODLEEAPI_COBRAND_PASSWORD'));
       Cache::put('cobrand', $yodleeApi->session()->getCobrandSessionToken(), 30);
     }
@@ -89,10 +87,10 @@ class TransactionRepository extends APIController
           'messages' => 'No Transactions Available'], 200);
     }
 
-    $history = Transaction::where('name', '=', $input['userName'])->get()->toJson();
+    $history = Transaction::where('name', '=', $input['userName'])->get();
     return response()->json(['error' => false,
         'messages' => 'successful retrieval of history',
-        'history' => json_encode($history, JSON_FORCE_OBJECT)], 200);
+        'history' => $history], 200);
   }
 }
 

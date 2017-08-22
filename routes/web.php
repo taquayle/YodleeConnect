@@ -11,13 +11,13 @@
 |
 */
 Route::post('login','\TradeLife\Login\LoginController@login');
-Route::post('logout','\TradeLife\Login\LoginController@logout');
+Route::post('fastlink','\TradeLife\FastLink\FastLinkController@fastLink');
 Route::post('register', '\TradeLife\Register\RegisterController@register');
 Route::post('transaction/put', '\TradeLife\Transactions\TransactionController@put');
 Route::post('transaction/get', '\TradeLife\Transactions\TransactionController@get');
-Route::post('profile/get', '\TradeLife\Profile\ProfileController@get');
-Route::post('profile/put', '\TradeLife\Profile\ProfileController@put');
-Route::post('profile/post', '\TradeLife\Profile\ProfileController@post');
+Route::post('profile/retrieve', '\TradeLife\Profile\ProfileController@retrieve');
+Route::post('profile/update', '\TradeLife\Profile\ProfileController@update');
+Route::post('profile/add', '\TradeLife\Profile\ProfileController@add');
 Route::post('stocks/get', '\TradeLife\Stocks\StockController@get');
 Route::post('exchange/generate', '\TradeLife\Exchange\ExchangeController@generate');
 
@@ -25,28 +25,7 @@ Route::post('exchange/generate', '\TradeLife\Exchange\ExchangeController@generat
 
 Route::get('/', function () {
     return view('testsuite');
-    //return Redirect::to('testsuite.php');
 });
-
-Route::get('/builduser', function () {
-    return view('createuserprofile');
-    //return Redirect::to('testsuite.php');
-});
-
-Route::get('/showdatabases', function () {
-    return view('showdatabases');
-    //return Redirect::to('testsuite.php');
-});
-
-
-Route::get('/database/users/default',function(){
-    return view('default_users');
-});
-
-Route::get('login',function(){
-    return view('logintest');
-});
-
 
 
 Route::match(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],'{any}', ['as'=>'any',function($any)

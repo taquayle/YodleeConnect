@@ -9,7 +9,6 @@
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "phpoffice/phpexcel": "^1.8",
-        "progknife/yodlee-api": "^0.7.1",
         "tymon/jwt-auth": "0.5.*"
     },
     "require-dev": {
@@ -25,7 +24,8 @@
         "psr-4": {
             "App\\": "app/",
             "TradeLife\\":"TradeLife/",
-            "ExScrape\\": "app/exchange-scrapper/src/"
+            "ExScrape\\": "Lib/exchange-scrapper/src/",
+            "YodleeApi\\": "Lib/progknife/yodlee-api/src"
         }
     },
     "autoload-dev": {

@@ -29,12 +29,6 @@ class LoginController extends APIController
 
   }
 
-  public function logtout()
-  {
-    $input = Input::json()->all();
-    return $this->logingRepository->intiateLogout($input);
-  }
-
 }
 
 ?>
