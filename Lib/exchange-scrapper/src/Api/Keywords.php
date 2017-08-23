@@ -39,20 +39,29 @@ class KEYWORDS extends APIAbstract{
     file_put_contents($fileName, json_encode($keywords, JSON_PRETTY_PRINT));
   }
 
-  private function parseColumn($db, &$keywords, &$companies, $column, $delim = "/[\/,\n,\:,\s]+/"){
+  private function parseColumn($db, &$keywords, &$companies, $column, $delim = "/[\(,\)\/,\n,\:,\s]+/"){
     // Split the sector column by Delim
+    $bad_kw = $this->buildIgnoredKeywords();
     foreach ($db as $cur) {
-      $columnSplit = preg_split($delim, trim($cur[$column]));
-      foreach ($columnSplit as $key) // Check each split word
-      {
-        // Add to (or create) the keyword and add the company symbol
-        $keywords[$key][] = $cur['symbol'];
-        // Check if the company exists in the list, if it doesn't, create
-        if(! array_key_exists(strtoupper($cur['symbol']), $companies))
-          $companies[$cur['symbol']] = ['Symbol' => $cur['symbol'],'Value' => 0,
-                                      'Keys' => array(), 'Cap' => $cur['cap']];
-        // Add the keyword to the company list
-        $companies[$cur['symbol']]['Keys'][$key] = 0;
+      if(strcmp($cur[$column], "N/A") !== 0){
+        $columnSplit = preg_split($delim, trim($cur[$column]));
+        foreach ($columnSplit as $key) // Check each split word
+        {
+          if(!array_key_exists(strtoupper($key), $bad_kw)){
+            // Add to (or create) the keyword and add the company symbol
+            $keywords[$key][] = $cur['symbol'];
+            // Check if the company exists in the list, if it doesn't, create
+            if(! array_key_exists(strtoupper($cur['symbol']), $companies))
+              $companies[$cur['symbol']] = ['Symbol' => $cur['symbol'],'Value' => 0,
+                                          'Keys' => array(), 'Cap' => $cur['cap']];
+            // Add the keyword to the company list
+            $companies[$cur['symbol']]['Keys'][$key] = 0;
+          }
+        }
+      }
+      else{
+        $companies[$cur['symbol']] = ['Symbol' => $cur['symbol'],'Value' => 0,
+                                    'Keys' => array(), 'Cap' => $cur['cap']];
       }
     }
   }

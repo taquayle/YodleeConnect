@@ -20,12 +20,20 @@ Route::post('profile/update', '\TradeLife\Profile\ProfileController@update');
 Route::post('profile/add', '\TradeLife\Profile\ProfileController@add');
 Route::post('stocks/get', '\TradeLife\Stocks\StockController@get');
 
-
+Route::post('keywords/company', '\TradeLife\Keywords\KeywordsController@company');
+Route::post('keywords/user', '\TradeLife\Keywords\KeywordsController@user');
 
 Route::get('/', function () {
-    return view('testsuite');
+    return view('tradelifelanding');
 });
 
+Route::get('/company/edit', function () {
+    return view('company');
+});
+
+Route::post('/company/edit', function () {
+    return view('company');
+});
 
 Route::match(['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],'{any}', ['as'=>'any',function($any)
         { // Any api url that does not exist

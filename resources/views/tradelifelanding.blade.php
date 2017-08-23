@@ -86,11 +86,10 @@
             @endif
 
             <div class="content">
-
-
                 <div class="title m-b-md">
                     TradeLife Running
                 </div>
+                <a href="{{ url('/company/edit') }}">Company Keyword</a>
             </div>
         </div>
     </body>

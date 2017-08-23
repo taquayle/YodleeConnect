@@ -37,11 +37,6 @@
         return false;
       $targetSectors = null;
 
-      /*CONTINUE FROM HERE*/
-      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_COMPANY.json";
-      $byCompany = json_decode(file_get_contents($fileName));
-      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_KEYWORD.json";
-      $byKeyword = json_decode(file_get_contents($fileName));
 
       if($profile->Desc_Keywords != null){
         $targetSectors = $this->weightedChoice($secArr, get_object_vars($profile->Desc_Keywords), $weight_used);}
