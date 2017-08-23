@@ -28,6 +28,10 @@ class TransactionRepository extends APIController
     }
 
     $yodleeApi->setTokens(Cache::get('cobrand'), $input['yodleeToken']);
+
+    /**************************************************************************/
+    // USE THIS ONCE 'IN PRODUCTION', DEVELOPER MODE USERS TRANS ARE YEARS OLD
+    //$response = $yodleeApi->transactions()->getPreviousDays(env('DEFAULT_AMOUNT_OF_DAYS'));
     $response = $yodleeApi->transactions()->getPreviousYears(10);
     $transCount = 0;
     foreach ($response as $transaction) {

@@ -10,4 +10,4 @@ Homestead.yaml
 npm-debug.log
 .env
 /storage/users/
-/storage/stockdata/
+/storage/stockdata/*.csv

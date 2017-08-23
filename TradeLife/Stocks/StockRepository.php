@@ -94,7 +94,7 @@ class StockRepository extends APIController
   }
 
   /**
-  * Checks if the Local data exsists and is up to date (less than 24hrs old).
+  * Checks if the Local data exists and is up to date (less than 24hrs old).
   * If the file does not exist, download from quandl, if it's old, re-download.
   * Else the file is good and up to date. Return file location
   *

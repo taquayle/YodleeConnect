@@ -41,7 +41,7 @@ abstract class APIAbstract
     $name = str_replace("&#39;", '', $name); //Remove ', causes errors in SQL
     $name = strtoupper($name);
     $stmt->bindParam(2, $name);
-    $stmt->bindParam(3, $symbol);
+    $stmt->bindParam(3, trim($symbol));
     $stmt->bindParam(4, $price);
     $cap = round(($cap / 1000000), 2);
     $stmt->bindParam(5, $cap);

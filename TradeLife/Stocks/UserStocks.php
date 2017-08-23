@@ -29,9 +29,9 @@
       $profile = json_decode(file_get_contents($fileName));
       $weight_used = 'Value';
 
-      $temp = new \ExScrape\Client();
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_SECTOR.json";
       // Decode the JSON file containing the generated keywords
-      $secArr = json_decode($temp->keywords()->retrieve());
+      $secArr = json_decode(file_get_contents($fileName));
 
       if($profile->User_Keywords == null && $profile->Desc_Keywords == null)
         return false;
@@ -143,9 +143,9 @@
     */
     private function weightedChoice(&$secArr, $userKeyWordArray, $weight)
     {
-      $temp = new \ExScrape\Client();
+      $fileName = env('COMPANY_KEYWORDS_REPO') . "BY_SECTOR.json";
       // Decode the JSON file containing the generated keywords
-      $secArr = json_decode($temp->keywords()->retrieve());
+      $secArr = json_decode(file_get_contents($fileName));
 
       // Check each keyword in the user keyword array $userKeyWordArray
       foreach ($userKeyWordArray as $k => $userKeyword) {

@@ -19,7 +19,6 @@ Route::post('profile/retrieve', '\TradeLife\Profile\ProfileController@retrieve')
 Route::post('profile/update', '\TradeLife\Profile\ProfileController@update');
 Route::post('profile/add', '\TradeLife\Profile\ProfileController@add');
 Route::post('stocks/get', '\TradeLife\Stocks\StockController@get');
-Route::post('exchange/generate', '\TradeLife\Exchange\ExchangeController@generate');
 
 
 

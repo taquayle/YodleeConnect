@@ -24,7 +24,7 @@
       $profile = $this->emptyProfile($this->user);
       $profile['UserName'] = $user;
       $profile['User_Keywords'] = $saveUserKeys;
-      
+
       //No transactions for user yet. don't continue
       //  This profile is either a 'base' or only uses User_Keywords
       $profile['Transactions'] = Transaction::where('name', '=', $this->user)->count();
@@ -35,17 +35,21 @@
       else{
         $ignore_keywords = $this->buildIgnoreKeywords();
         $keywords = array();
-        $keywords = $this->parse($keywords, $ignore_keywords, 'category');
-        $keywords = $this->parse($keywords, $ignore_keywords, 'simple_desc');
-        $keywords = $this->parse($keywords, $ignore_keywords, 'original_desc');
+        //$keywords passed by ref.
+        $this->parse($keywords, $ignore_keywords, 'category');
+        $profile['Cate_Keywords'] = $keywords;
+
+        $this->parse($keywords, $ignore_keywords, 'simple_desc');
+        $this->parse($keywords, $ignore_keywords, 'original_desc');
         $profile['Keywords'] = $keywords;
-        $profile['Cate_Keywords'] = $this->buildCategory();
-        $profile['Desc_Keywords'] = $this->buildDescription();
+
+
+        $keywords = array();
+        $this->parse($keywords, $ignore_keywords, 'simple_desc');
+        $this->parse($keywords, $ignore_keywords, 'original_desc');
+        $profile['Desc_Keywords'] = $keywords;
 
         file_put_contents($fileName, json_encode($profile, JSON_FORCE_OBJECT));
-
-        $fileName = env('USER_PROFILE_REPO') . 'DEBUG'. $this->user . ".json";
-        file_put_contents($fileName, json_encode($profile));
       }
       return true;
     }
@@ -219,44 +223,6 @@
       return $combinedKW;
     }
 
-    /**
-    * Parses only the category column of the transaction database to build
-    * keywords.
-    *
-    * @return Multidimensional array of Strings
-    */
-    public function buildCategory()
-    {
-      $bad_kw = $this->buildIgnoreKeywords();
-      $kw_cat = array();
-
-      $this->parse($kw_cat, $bad_kw, 'category');
-      // usort($kw_cat, array($this, 'cmpVal'));
-      //$this->percents($kw_cat);
-      return $kw_cat;
-    }
-
-    /**
-    * Parses both of the description columns in the transaction database to
-    * build the keyword array.
-    *
-    * @return Multidimensional array of Strings
-    */
-    public function buildDescription()
-    {
-      $bad_kw = $this->buildIgnoreKeywords();
-      $kw_simp = array();
-      $kw_orig = array();
-
-      $this->parse($kw_simp, $bad_kw, 'simple_desc');
-      //$this->parse($kw_orig, $bad_kw, 'original_desc', "/[\/,\n,\s]+/");
-
-      // $kw_desc = array_unique(array_merge($kw_orig, $kw_simp), SORT_REGULAR);
-      // usort($kw_desc, array($this, 'cmpVal'));
-      // $this->percents($kw_desc);
-
-      return $kw_simp;
-    }
 
     /**
     * Used to test if file was accessible.
