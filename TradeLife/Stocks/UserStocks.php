@@ -98,9 +98,10 @@
       return $returnValues;
     }
 
-    private function tailoredLoop($byKeyword, &$byCompany, $keywordsToCheck){
+    private function tailoredLoop($byKeyword, &$byCompany, $keywordsToCheck)
+    {
       foreach ($keywordsToCheck as $k => $key){
-        if(array_key_exists($k, $byKeyword)){
+        if(array_key_exists($k, $byKeyword)){ //Check main keyword
           foreach ($byKeyword[$k] as $relatedCompanies){
             if(array_key_exists($relatedCompanies, $byCompany)){
                 $byCompany[$relatedCompanies]['Value'] += $key->Value;
@@ -108,9 +109,22 @@
             }
           }
         }
+        else{ // Check associated keywords
+          if(!empty($key->Associated)){
+            foreach($key->Associated as $assocKey){
+              if(array_key_exists($assocKey, $byKeyword)){ //Check main keyword
+                foreach ($byKeyword[$assocKey] as $relatedCompanies){
+                  if(array_key_exists($relatedCompanies, $byCompany)){
+                      $byCompany[$relatedCompanies]['Value'] += $key->Value;
+                      $byCompany[$relatedCompanies]['Keys'][$assocKey] += $key->Value;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
-
     /**
     * Used in conjunction with usort to sort weighted-sectors in descending
     * order by weight.

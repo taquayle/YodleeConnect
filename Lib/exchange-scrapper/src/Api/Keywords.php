@@ -16,27 +16,24 @@ class KEYWORDS extends APIAbstract{
     $exchange = Company::select('*')->get();
     $keywords = array();
     $companies = array();
+    $file = env('SCRAPPER_KEYWORDS_REPO') . "BY_";
+    if(file_exists(($file.'COMPANY.JSON')))
+      $companies = json_decode(file_get_contents($file.'COMPANY.JSON'), true);
+    if(file_exists(($file.'KEYWORD.JSON')))
+      $keywords = json_decode(file_get_contents($file.'KEYWORD.JSON'), true);
 
     $by_sec = $this->bySector($exchange);
     $this->parseColumn($exchange, $keywords, $companies, 'industry');
     $this->parseColumn($exchange, $keywords, $companies, 'sector');
 
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "BY_SECTOR.json";
-    file_put_contents($fileName, json_encode($by_sec, JSON_FORCE_OBJECT));
 
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "PP_BY_SECTOR.json";
-    file_put_contents($fileName, json_encode($by_sec, JSON_PRETTY_PRINT));
+    file_put_contents(($file.'SECTOR.JSON'), json_encode($by_sec, JSON_FORCE_OBJECT));
+    file_put_contents(($file.'COMPANY.JSON'), json_encode($companies));
+    file_put_contents(($file.'KEYWORD.JSON'), json_encode($keywords));
 
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "BY_COMPANY.json";
-    file_put_contents($fileName, json_encode($companies));
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "BY_KEYWORD.json";
-    file_put_contents($fileName, json_encode($keywords));
-
-
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "PP_BY_COMPANY.json";
-    file_put_contents($fileName, json_encode($companies, JSON_PRETTY_PRINT));
-    $fileName = env('SCRAPPER_KEYWORDS_REPO') . "PP_BY_KEYWORD.json";
-    file_put_contents($fileName, json_encode($keywords, JSON_PRETTY_PRINT));
+    file_put_contents(($file.'SECTOR_PP.JSON'), json_encode($by_sec, JSON_PRETTY_PRINT));
+    file_put_contents(($file.'COMPANY_PP.JSON'), json_encode($companies, JSON_PRETTY_PRINT));
+    file_put_contents(($file.'KEYWORD_PP.JSON'), json_encode($keywords, JSON_PRETTY_PRINT));
   }
 
   private function parseColumn($db, &$keywords, &$companies, $column, $delim = "/[\(,\)\/,\n,\:,\s]+/"){
@@ -49,7 +46,7 @@ class KEYWORDS extends APIAbstract{
         {
           if(!array_key_exists(strtoupper($key), $bad_kw)){
             // Add to (or create) the keyword and add the company symbol
-            $keywords[$key][] = $cur['symbol'];
+            $keywords[$key][$cur['symbol']] = $cur['symbol'];
             // Check if the company exists in the list, if it doesn't, create
             if(! array_key_exists(strtoupper($cur['symbol']), $companies))
               $companies[$cur['symbol']] = ['Symbol' => $cur['symbol'],'Value' => 0,

@@ -36,20 +36,27 @@
         $ignore_keywords = $this->buildIgnoreKeywords();
         $keywords = array();
         //$keywords passed by ref.
-        $this->parse($keywords, $ignore_keywords, 'category');
+        $globalFile = env('USER_KEYWORDS_REPO') . "USER.JSON";
+        $globalKeywords = array();
+        if(file_exists($globalFile))
+          $globalKeywords = json_decode(file_get_contents($globalFile), true);
+        $this->parse($globalKeywords, $keywords, $ignore_keywords, 'category');
         $profile['Cate_Keywords'] = $keywords;
 
-        $this->parse($keywords, $ignore_keywords, 'simple_desc');
-        $this->parse($keywords, $ignore_keywords, 'original_desc');
+        $this->parse($globalKeywords, $keywords, $ignore_keywords, 'simple_desc');
+        $this->parse($globalKeywords, $keywords, $ignore_keywords, 'original_desc');
         $profile['Keywords'] = $keywords;
 
 
         $keywords = array();
-        $this->parse($keywords, $ignore_keywords, 'simple_desc');
-        $this->parse($keywords, $ignore_keywords, 'original_desc');
+        $this->parse($globalKeywords, $keywords, $ignore_keywords, 'simple_desc');
+        $this->parse($globalKeywords, $keywords, $ignore_keywords, 'original_desc');
         $profile['Desc_Keywords'] = $keywords;
 
         file_put_contents($fileName, json_encode($profile, JSON_FORCE_OBJECT));
+        file_put_contents($globalFile, json_encode($globalKeywords, JSON_FORCE_OBJECT));
+        $globalFile = env('USER_KEYWORDS_REPO') . "USER_PP.JSON";
+        file_put_contents($globalFile, json_encode($globalKeywords, JSON_PRETTY_PRINT));
       }
       return true;
     }
@@ -134,7 +141,7 @@
     * @param String, Optional
     * @return Multidimensional Array
     */
-    private function parse(&$kw, $bad_kw, $column, $delimiter = "/[\/,\s,\n]+/")
+    private function parse(&$global, &$kw, $bad_kw, $column, $delimiter = "/[\/,\s,\n]+/")
     {
 
        // Requery/reset to top of list
@@ -150,9 +157,13 @@
             // keyWords
             if($this->checkKeyword($bad_kw, $key))
             {
+              if(!array_key_exists(strtoupper($key), $global)){
+                $global[$key] = ['Associated' => array()];
+              }
               if($this->checkKeyword($kw, $key)){ // New Keyword
+
                 $kw[$key] = [ 'Name' => $key, 'Value'=> doubleval($row['amount']),
-                          'Hits' => 1, 'Percent' => 0.0];}
+                          'Hits' => 1, 'Associated' => $global[$key]['Associated'] ,'Percent' => 0.0];}
               else { // Keyword already in list. update values
                 $kw[$key]['Value'] += $row['amount'];
                 $kw[$key]['Hits'] += 1;}

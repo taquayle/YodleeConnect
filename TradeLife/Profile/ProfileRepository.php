@@ -108,7 +108,8 @@ class ProfileRepository extends APIController
     if(!file_exists($fileName))
       return response()->json(['error' => true,
           'message' => "Profile does not exist"], 200);
-
+    $globalFile = env('USER_KEYWORDS_REPO') . "USER.JSON";
+    $globalKeywords = json_decode(file_get_contents($globalFile), true);
     // Get the profile from JSON file and return a PHP array
     $profile = json_decode(file_get_contents($fileName), true);
     // The value of the 'heaviest' keyword by value found in File
@@ -122,30 +123,18 @@ class ProfileRepository extends APIController
       }
     }
     $maxValue = $maxValue * env('USER_KEY_WEIGHT');
-    //$maxValue = $profile['Desc_Keywords'][0]['Value'] * env('USER_KEY_WEIGHT');
-
-    // The value of the 'heaviest' keyword by hits found in file
-    //$maxHits = $profile['Desc_Keywords'][0]['Hits'] * env('USER_KEY_WEIGHT');
 
 
-    // Insert first keyword if nothing has been inserted yet
-
-    // If user_keywords hasn't been used yet. insert first given keyword
-    //  THIS MAY NOT NEED TO BE HERE. WILL LOOK BACK AT THIS.
-    if($profile['User_Keywords'] == null)
-      $profile['User_Keywords'][strtoupper($input['keyWords'][0])] =
-          [ 'Name' => strtoupper($input['keyWords'][0]), 'Value'=> $maxValue,
-            'Hits' => $maxHits, 'Percent' => 0.0];
-
-    // Check if each given keyword is new or not.
+    // Insert new keywords
     foreach($input['keyWords'] as $word)
     {
-      // Since php arrays have a key-value pairing. check if word exists
-      if (!array_key_exists(strtoupper($word),$profile['User_Keywords'])) {
-        $profile['User_Keywords'][strtoupper($word)] =
-                [ 'Name' => strtoupper($word), 'Value'=> $maxValue,
-                  'Hits' => $maxHits, 'Percent' => 0.0];
+      if(!array_key_exists(strtoupper($word), $globalKeywords)){
+        $globalKeywords[strtoupper($word)] = ['Associated' => array()];
       }
+      $profile['User_Keywords'][strtoupper($word)] =
+              [ 'Name' => strtoupper($word), 'Value'=> $maxValue,
+                'Hits' => $maxHits, 'Percent' => 0.0];
+
     }
 
     // Update all the user_keywords in profile for the newest weight given in
@@ -158,7 +147,9 @@ class ProfileRepository extends APIController
 
     // Save updated profile
     file_put_contents($fileName, json_encode($profile, JSON_FORCE_OBJECT));
-
+    file_put_contents($globalFile, json_encode($globalKeywords, JSON_FORCE_OBJECT));
+    $globalFile = env('USER_KEYWORDS_REPO') . "USER_PP.JSON";
+    file_put_contents($globalFile, json_encode($globalKeywords, JSON_PRETTY_PRINT));
     return response()->json(['error' => false,
         'message' => "Successfully updated User_Keywords",
         'keywords' => $profile['User_Keywords']], 200);
